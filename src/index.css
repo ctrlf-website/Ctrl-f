@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* 🎨 variables de marca */
+:root {
+  --primary: #37a178;
+}
+
+/* ✨ Animaciones personalizadas */
+@layer utilities {
+  .animate-fade {
+    animation: fade 1.4s ease-in-out both;
+  }
+  .animate-typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 2s steps(25), blink .7s step-end infinite alternate;
+  }
+  .animate-bounce-soft {
+    animation: bounce-custom 1s infinite alternate;
+  }
+
+  @keyframes fade {
+    from { opacity: 0 }
+    to { opacity: 1 }
+  }
+
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+
+  @keyframes blink {
+    50% { border-color: transparent }
+  }
+
+  @keyframes bounce-custom {
+    to { transform: translateY(10px); }
+  }
+}
