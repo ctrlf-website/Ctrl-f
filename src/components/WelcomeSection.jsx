@@ -1,21 +1,23 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function WelcomeSection() {
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("Terrícola");
   const [showStory, setShowStory] = useState(false);
   const storyRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    setDisplayName(name.trim());
+    const trimmed = name.trim();
+    setDisplayName(trimmed);
     setShowStory(true);
 
-    setTimeout(() => {
-      storyRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 400);
+    // Navegar a la página CreateWeb y pasar el nombre en location.state
+    navigate("/crear-web", { state: { name: trimmed } });
   };
 
   return (
@@ -65,18 +67,29 @@ export default function WelcomeSection() {
 
       {/** ✨ Sección que aparece después */}
       {showStory && (
-        <section
-          ref={storyRef}
-          className="mt-24 opacity-0 animate-fade text-lg"
-        >
-          <p>¿Viste qué rápido cambiaste una página web?</p>
-          <p className="mt-2">Así de fácil es crear la tuya.</p>
-          <p className="mt-2">
-            Si querés seguir jugando, scrolleá hacia abajo.
-          </p>
+        <>
+          <section
+            ref={storyRef}
+            className="mt-24 opacity-0 animate-fade text-lg"
+          >
+            <p>¿Viste qué rápido cambiaste una página web?</p>
+            <p className="mt-2">Así de fácil es crear la tuya.</p>
+            <p className="mt-2">
+              Si querés seguir jugando, scrolleá hacia abajo.
+            </p>
 
-          <div className="text-4xl mt-6 animate-bounce-soft">↓</div>
-        </section>
+            <div className="text-4xl mt-6 animate-bounce-soft">↓</div>
+          </section>
+          <button
+            onClick={() => {
+              storyRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="mt-6 px-4 py-2 rounded-lg text-white font-medium transition"
+            style={{ backgroundColor: "var(--primary)" }}
+          >
+            Llevarme ahí ↓
+          </button>
+        </>
       )}
     </section>
   );

@@ -1,4 +1,8 @@
 import { useForm } from "react-hook-form";
+import { db } from "../firebase/firebaseConfig";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useState } from "react";
+import { useUserStore } from "../store/userStore";
 
 export default function CreateWebForm() {
   const {
@@ -8,10 +12,68 @@ export default function CreateWebForm() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Datos del formulario:", data);
-    reset(); // limpia el formulario
+  const [status, setStatus] = useState("");
+  const { user } = useUserStore();
+  const onSubmit = async (data) => {
+    setStatus("Guardando...");
+    if (!user) {
+      alert("Primero tenés que iniciar sesión");
+      return;
+    }
+
+    try {
+      // Referencia al documento del usuario
+      const userRef = doc(db, "users", user.uid);
+
+      // Guardar o actualizar los datos
+      await setDoc(
+        userRef,
+        {
+          email: user.email,
+          miWeb: {
+            siteName: data.siteName,
+            globalStyle: data.globalStyle,
+          },
+        },
+        { merge: true } // 🔹 Esto evita sobrescribir todo el documento
+      );
+
+      setStatus("✅ Guardado correctamente en Firestore!");
+      reset();
+    } catch (error) {
+      console.error("Error al guardar en Firestore:", error);
+      setStatus("❌ Error al guardar. Revisa la consola.");
+      reset();
+    }
   };
+
+  // const onSubmit = async (data) => {
+  //   setStatus("Guardando...");
+  //   try {
+  //     // 🔹 Por ahora, usamos un ID de prueba
+  //     const userId = "testUser";
+  //     console.log(`Submit, ${userId}`, data);
+
+  //     // 🔹 Guardamos en Firestore: users/testUser
+  //     await setDoc(
+  //       doc(db, "users", userId),
+  //       {
+  //         miWeb: {
+  //           siteName: data.siteName,
+  //           globalStyle: data.globalStyle,
+  //         },
+  //         updatedAt: serverTimestamp(),
+  //       },
+  //       { merge: true } // No borra otros campos si existen
+  //     );
+
+  //     setStatus("✅ Guardado correctamente en Firestore!");
+  //     reset();
+  //   } catch (error) {
+  //     console.error("Error al guardar:", error);
+  //     setStatus("❌ Error al guardar. Revisa la consola.");
+  //   }
+  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
@@ -59,6 +121,8 @@ export default function CreateWebForm() {
         >
           Crear
         </button>
+
+        {status && <p className="mt-4 text-center text-sm">{status}</p>}
       </form>
     </div>
   );
