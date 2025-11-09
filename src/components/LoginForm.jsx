@@ -7,6 +7,21 @@ export default function LoginForm() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      // 🔥 Obtener ID Token del usuario autenticado
+      const idToken = await user.getIdToken();
+      console.log("[FRONT] -> token obtenido:", idToken.slice(0, 20) + "...");
+
+      // 🔁 Enviar token al backend
+      const response = await fetch("http://localhost:4000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log("[FRONT] -> respuesta del backend:", data);
 
       const userRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(userRef);
