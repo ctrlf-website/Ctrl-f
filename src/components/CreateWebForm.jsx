@@ -14,7 +14,7 @@ export default function CreateWebForm() {
 
   const { user } = useUserStore();
   const { saveSite, isLoading, error } = useSiteStore();
-  const { buildSite } = useBuildStore();
+  const { buildSite, deployedUrl, siteIsLoading } = useBuildStore();
   const navigate = useNavigate();
 
   // 2️⃣ Envío de datos formateado al formato que el backend necesita
@@ -139,7 +139,19 @@ export default function CreateWebForm() {
             {isLoading ? "Publicando..." : "Publicar sitio"}
           </button>
         </div>
-
+        {/* 🔹 Link del sitio publicado */}
+        {deployedUrl && (
+          <div className="mt-4 text-center">
+            <a
+              href={deployedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 font-medium underline hover:text-blue-800"
+            >
+              Ver tu sitio publicado 🚀
+            </a>
+          </div>
+        )}
         {/* 🔹 Feedback visual */}
         {error && (
           <p className="mt-2 text-center text-sm text-red-600">

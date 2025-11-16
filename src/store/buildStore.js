@@ -1,18 +1,28 @@
+// buildStore.js
 import { create } from "zustand";
 import { buildApi } from "../api/build";
 
 export const useBuildStore = create((set) => ({
-  builded: null,
-  isLoading: false,
+  deployedUrl: null,
+  siteIsLoading: false,
   error: null,
 
   buildSite: async () => {
-    set({ isLoading: true });
+    set({ siteIsLoading: true, error: null });
+
     try {
-      await buildApi.buildSite();
-      set({ builded: true, isLoading: false });
+      const response = await buildApi.buildSite();
+
+      // Esperamos que el backend devuelva { status, message, url }
+      set({
+        deployedUrl: response?.url || null,
+        siteIsLoading: false,
+      });
     } catch (error) {
-      set({ builded: true, error, isLoading: false });
+      set({
+        error,
+        siteIsLoading: false,
+      });
     }
   },
 }));
