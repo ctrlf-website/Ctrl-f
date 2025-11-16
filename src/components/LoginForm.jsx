@@ -1,8 +1,11 @@
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider, db } from "../firebase/firebaseConfig";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -12,13 +15,16 @@ export default function LoginForm() {
       console.log("[FRONT] -> token obtenido:", idToken.slice(0, 20) + "...");
 
       // 🔁 Enviar token al backend
-      const response = await fetch("http://localhost:4000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
 
       const data = await response.json();
       console.log("[FRONT] -> respuesta del backend:", data);
@@ -35,6 +41,7 @@ export default function LoginForm() {
       }
 
       alert(`Bienvenida ${user.displayName} 🌟`);
+      navigate("/crear-web", { state: { miWeb: data } });
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       alert("Hubo un problema con el login.");

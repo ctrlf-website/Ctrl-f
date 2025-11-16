@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      // Redirige todas las rutas a index.html
+      const redirect = "/Ctrl-f/" + location.pathname.replace("/Ctrl-f/", "");
+      sessionStorage.redirect = redirect;
+      window.location.href = "/Ctrl-f/";
+    </script>
+  </head>
+  <body></body>
+</html>

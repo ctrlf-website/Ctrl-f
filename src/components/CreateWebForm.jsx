@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { useUserStore } from "../store/userStore";
 import { useSiteStore } from "../store/siteStore";
 import { useBuildStore } from "../store/buildStore";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateWebForm() {
   const {
@@ -14,11 +15,16 @@ export default function CreateWebForm() {
   const { user } = useUserStore();
   const { saveSite, isLoading, error } = useSiteStore();
   const { buildSite } = useBuildStore();
+  const navigate = useNavigate();
 
   // 2️⃣ Envío de datos formateado al formato que el backend necesita
   const onSubmit = (data) => {
+    console.log("[CREATE WEB FORM] user:", user);
+
     if (!user) {
       alert("Primero tenés que iniciar sesión");
+      // Navegar a la página CreateWeb y pasar el nombre en location.state
+      navigate("/login", { state: { miWeb: data } });
       return;
     }
 
