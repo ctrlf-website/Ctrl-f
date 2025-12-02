@@ -16,10 +16,10 @@ export const useSiteStore = create((set) => ({
     }
   },
 
-  saveSite: async (data) => {
+  saveSite: async (formData) => {
     set({ isLoading: true });
     try {
-      const updated = await siteApi.updateSite(data);
+      const updated = await siteApi.updateSite(formData);
       set({ miWeb: updated, isLoading: false });
     } catch (error) {
       set({ error, isLoading: false });
