@@ -5,6 +5,7 @@ export default function WelcomeSection() {
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("Terrícola");
   const [showStory, setShowStory] = useState(false);
+
   const storyRef = useRef(null);
   const navigate = useNavigate();
 
@@ -16,8 +17,11 @@ export default function WelcomeSection() {
     setDisplayName(trimmed);
     setShowStory(true);
 
-    // Navegar a la página CreateWeb y pasar el nombre en location.state
-    navigate("/crear-web", { state: { name: trimmed } });
+    // YA NO navega automáticamente
+    // Solo mostramos la historia
+    setTimeout(() => {
+      storyRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
   };
 
   return (
@@ -29,67 +33,81 @@ export default function WelcomeSection() {
         </span>
       </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md mt-10 animate-fade"
-      >
-        <label className="block text-lg mb-3">
-          Si querés que te salude por tu nombre, decime cómo te llaman:
-        </label>
+      {!showStory && (
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-md mt-10 animate-fade"
+        >
+          <label className="block text-lg mb-3">
+            Si querés que te salude por tu nombre, decime cómo te llaman:
+          </label>
 
-        <div className="flex gap-2">
-          <input
-            autoFocus
-            type="text"
-            placeholder="Escribí tu nombre"
-            onChange={(e) => {
-              const value = e.target.value;
+          <div className="flex gap-2">
+            <input
+              autoFocus
+              type="text"
+              placeholder="Escribí tu nombre"
+              onChange={(e) => {
+                const value = e.target.value;
 
-              // Capitaliza solo la primera letra
-              const formatted =
-                value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                const formatted =
+                  value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 
-              setName(formatted);
-            }}
-            className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2"
-            style={{ "--tw-ring-color": "var(--primary)" }}
-          />
+                setName(formatted);
+              }}
+              className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2"
+              style={{ "--tw-ring-color": "var(--primary)" }}
+            />
 
-          <button
-            type="submit"
-            className="px-4 py-2 rounded-lg text-white font-medium transition"
-            style={{ backgroundColor: "var(--primary)" }}
-          >
-            OK
-          </button>
-        </div>
-      </form>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg text-white font-medium transition"
+              style={{ backgroundColor: "var(--primary)" }}
+            >
+              OK
+            </button>
+          </div>
+        </form>
+      )}
 
-      {/** ✨ Sección que aparece después */}
       {showStory && (
-        <>
-          <section
-            ref={storyRef}
-            className="mt-24 opacity-0 animate-fade text-lg"
-          >
+        <section
+          ref={storyRef}
+          className="mt-24 max-w-xl text-lg animate-fade space-y-10"
+        >
+          {/* 📌 PÁRRAFO 1 */}
+          <div className="min-h-[80vh] flex flex-col justify-center">
             <p>¿Viste qué rápido cambiaste una página web?</p>
-            <p className="mt-2">Así de fácil es crear la tuya.</p>
-            <p className="mt-2">
-              Si querés seguir jugando, scrolleá hacia abajo.
-            </p>
+            <p className="mt-2">Eso fue solo el comienzo.</p>
+          </div>
 
-            <div className="text-4xl mt-6 animate-bounce-soft">↓</div>
-          </section>
-          <button
-            onClick={() => {
-              storyRef.current?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="mt-6 px-4 py-2 rounded-lg text-white font-medium transition"
-            style={{ backgroundColor: "var(--primary)" }}
-          >
-            Llevarme ahí ↓
-          </button>
-        </>
+          {/* 📌 PÁRRAFO 2 */}
+          <div className="min-h-[80vh] flex flex-col justify-center">
+            <p>Ahora estás en una pequeña historia interactiva.</p>
+            <p className="mt-2">
+              Mientras scrolleás, vas desbloqueando pasos para crear tu sitio.
+            </p>
+          </div>
+
+          {/* 📌 PÁRRAFO 3 — Podés agregar todos los que quieras */}
+          <div className="min-h-[80vh] flex flex-col justify-center">
+            <p>Cada parte te muestra lo fácil que es personalizarlo.</p>
+            <p className="mt-2">
+              Colores, tipografías, imágenes... todo en tus manos.
+            </p>
+          </div>
+
+          {/* 📌 BOTÓN FINAL */}
+          <div className="min-h-[60vh] flex flex-col justify-center items-center">
+            <button
+              onClick={() => navigate("/crear-web", { state: { name } })}
+              className="px-6 py-3 rounded-lg text-white font-semibold text-lg shadow-md transition"
+              style={{ backgroundColor: "var(--primary)" }}
+            >
+              Ir a crear mi web 🚀
+            </button>
+          </div>
+        </section>
       )}
     </section>
   );

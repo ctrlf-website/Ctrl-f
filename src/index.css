@@ -2,10 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  margin: 0;
+  padding: 0;
+}
 
 /* 🎨 variables de marca */
 :root {
   --primary: #37a178;
+  --bubble: orange;
 }
 
 /* ✨ Animaciones personalizadas */
