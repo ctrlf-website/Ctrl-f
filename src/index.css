@@ -59,40 +59,103 @@
 }
 
 .bubble {
-  /* background: radial-gradient(circle at bottom, #81e6f6, #5a91ff 40%, #3e69e6 70%); */
-  background: radial-gradient(circle at bottom, #81e6f6, #b0c4eb 40%, #6883d3 70%);
-  box-shadow: 0 0 12px rgba(80,150,255,0.6), inset 0 0 15px rgba(255,255,255,0.6);
+  background: radial-gradient(circle at 70% 85%, #81e6f6, #5a91ff 40%, #2b4cec 80%);
+  box-shadow:
+    0 0 10px rgba(100,170,255,0.7),
+    inset 0 0 12px rgba(255,255,255,0.6),
+    inset 0 -5px 10px rgba(0,0,80,0.3);
+  backdrop-filter: blur(2px);
   position: relative;
-  animation: float 3.5s ease-in-out infinite;
-  backdrop-filter: blur(1px);
+  transition: transform .4s ease, box-shadow .4s ease;
+  animation: floating 4.5s ease-in-out infinite;
 }
 
-/* Brillo → simula reflejo de luz */
+/* Reflejo principal suave */
 .bubble::before {
   content: "";
   position: absolute;
-  top: 15%;
-  left: 35%;
-  width: 40%;
-  height: 40%;
+  top: 18%;
+  left: 22%;
+  width: 42%;
+  height: 42%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+  background: radial-gradient(circle, rgba(255,255,255,.9), rgba(255,255,255,.05));
+  transition: opacity .3s ease, transform .4s ease;
 }
 
-/* Glow inferior para efecto transparente 3D */
+/* Glow inferior difuso */
 .bubble::after {
   content: "";
   position: absolute;
-  bottom: 10%;
-  right: 20%;
+  bottom: 12%;
+  right: 22%;
   width: 30%;
   height: 30%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.5), transparent);
+  background: radial-gradient(circle, rgba(255,255,255,.4), transparent 70%);
+  transition: opacity .3s ease;
 }
 
-/* Animación de flotación suave */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px) scale(1.03); }
+
+/* 📌 Interacción: reacción orgánica al hover */
+.bubble:hover {
+  transform: scale(1.12) translateY(-4px) rotate(1.5deg);
+  box-shadow:
+    0 0 18px rgba(120,190,255,0.85),
+    inset 0 0 18px rgba(255,255,255,0.9),
+    inset 0 -8px 14px rgba(0,0,80,0.45);
 }
+.bubble:hover::before {
+  opacity: 1;
+  transform: scale(1.15) translate(3px,-3px);
+}
+.bubble:hover::after {
+  opacity: 0.9;
+}
+
+
+/* 🫳 Click efecto rebote (tensión superficial) */
+.bubble:active {
+  transform: scale(0.92) translateY(-1.5px);
+  transition: transform .1s;
+}
+
+/* Estado deshabilitado */
+.bubble.disabled,
+.bubble:disabled {
+  opacity: 0.55;
+  filter: grayscale(40%) blur(0.5px);
+  box-shadow:
+    0 0 4px rgba(100,170,255,0.3),
+    inset 0 0 6px rgba(255,255,255,0.3),
+    inset 0 -3px 5px rgba(0,0,80,0.2);
+  animation: none;
+  cursor: not-allowed;
+  transform: scale(0.95);
+}
+
+/* Cancelamos interacción visual */
+.bubble.disabled:hover,
+.bubble:disabled:hover {
+  transform: scale(0.95) !important;
+  box-shadow:
+    0 0 4px rgba(100,170,255,0.3),
+    inset 0 0 6px rgba(255,255,255,0.3),
+    inset 0 -3px 5px rgba(0,0,80,0.2);
+}
+
+.bubble.disabled:active,
+.bubble:disabled:active {
+  transform: none;
+}
+
+
+
+/* 🌬 Animación flotante fluida */
+@keyframes floating {
+  0%   { transform: translateY(0)    rotate(0deg);   }
+  30%  { transform: translateY(-5px) rotate(1.5deg); }
+  60%  { transform: translateY(3px)  rotate(-1deg);  }
+  100% { transform: translateY(0)    rotate(0deg);   }
+}
+

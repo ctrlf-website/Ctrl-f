@@ -12,6 +12,7 @@ export default function ColorPicker({
   right,
   top,
   bottom,
+  disabled,
 }) {
   return (
     <Bubble
@@ -19,6 +20,7 @@ export default function ColorPicker({
       rightValue={right}
       topValue={top}
       bottomValue={bottom}
+      disabled={disabled}
     >
       {icon === "text" ? (
         <FormatColorText fontSize="small" />
@@ -43,6 +45,7 @@ export default function ColorPicker({
           cursor: "pointer",
         }}
         hidden
+        disabled={disabled}
       />
     </Bubble>
   );

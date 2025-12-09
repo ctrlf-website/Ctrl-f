@@ -10,6 +10,7 @@ export default function ImagePicker({
   right,
   top,
   bottom,
+  disabled,
 }) {
   return (
     <Bubble
@@ -17,6 +18,7 @@ export default function ImagePicker({
       rightValue={right}
       topValue={top}
       bottomValue={bottom}
+      disabled={disabled}
     >
       <AddPhotoAlternate />
       <input
@@ -25,6 +27,7 @@ export default function ImagePicker({
         accept="image/*"
         onChange={(e) => update(path, e.target.value)}
         hidden
+        disabled={disabled}
       />
     </Bubble>
   );

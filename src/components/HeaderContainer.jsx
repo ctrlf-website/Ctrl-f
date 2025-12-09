@@ -4,21 +4,43 @@ import ColorPicker from "./ColorPicker";
 import ImagePicker from "./ImagePicker";
 import TextInput from "./TextInput";
 import SelectFontFamily from "./SelectFontFamily";
+import { Switch } from "@mui/material";
 
 export default function HeaderContainer({
   register,
   watch, //reemplaza todos los useState
   setValue, //  permite actualizar valores del form
   logoPreview, // viene preparado desde el padre
+
 }) {
   const header = watch("header") || {};
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [showSelect, setShowSelect] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [disabledImage, setDisabledImage] = useState(true);
+  const [disabledColor, setDisabledColor] = useState(false);
 
   //  Helper para actualizar con dot notation
   const update = (path, value) => {
     setValue(path, value, { shouldDirty: true, shouldTouch: true });
+  };
+
+  const handleChange = (e) => {
+    setChecked(e.target.checked);
+    if (e.target.checked) {
+      console.log("ES TRUE, cargo imagen y dejo el color");
+      setDisabledColor(true);
+      setDisabledImage(false);
+
+      update("header.backgroundImage", "");
+    } else {
+      console.log("ES FALSE, borro imagen y cargo el color");
+      setDisabledImage(true);
+      setDisabledColor(false);
+
+      update("header.backgroundImage", "");
+    }
   };
 
   return (
@@ -38,8 +60,25 @@ export default function HeaderContainer({
             register={register}
             update={update}
             icon={"background"}
-            left="10px"
+            right="120px"
             top="10px"
+            disabled={disabledColor}
+          />
+          <div style={{ position: "absolute", right: "70px", top: "5px" }}>
+            <Switch
+              checked={checked}
+              onChange={handleChange}
+              slotProps={{ input: { "aria-label": "controlled" } }}
+            />
+          </div>
+
+          <ImagePicker
+            path="header.backgroundImage"
+            register={register}
+            update={update}
+            right="50px"
+            top="10px"
+            disabled={disabledImage}
           />
 
           <div
@@ -132,12 +171,12 @@ export default function HeaderContainer({
                   }}
                 >
                   {header.title || "Haz click para cambiar el título del sitio"}
+                  <TextInput
+                    setEditingTitle={setEditingTitle}
+                    right="-50px"
+                    top="4px"
+                  />
                 </h1>
-                <TextInput
-                  setEditingTitle={setEditingTitle}
-                  right="10px"
-                  top="4px"
-                />
               </div>
             )}
           </div>

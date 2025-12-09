@@ -8,13 +8,16 @@ export default function Bubble({
   bottomValue,
   className = "",
   style = {},
+  disabled,
 }) {
   const horizontalPosition = { left: leftValue, right: rightValue };
   const verticalPosition = { top: topValue, bottom: bottomValue };
 
   return (
     <label
-      className={`bubble cursor-pointer flex items-center justify-center ${className}`}
+      className={`bubble cursor-pointer flex items-center justify-center ${className} ${
+        disabled ? "disabled" : ""
+      }`}
       style={{
         width: "30px",
         height: "30px",
