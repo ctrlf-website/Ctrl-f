@@ -6,11 +6,18 @@ export default function ImagePicker({
   path,
   register,
   update,
-  side = "left",
+  left,
+  right,
+  top,
   bottom,
 }) {
   return (
-    <Bubble side={side} bottomValue={bottom}>
+    <Bubble
+      leftValue={left}
+      rightValue={right}
+      topValue={top}
+      bottomValue={bottom}
+    >
       <AddPhotoAlternate />
       <input
         type="file"

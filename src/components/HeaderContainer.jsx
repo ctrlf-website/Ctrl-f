@@ -38,7 +38,7 @@ export default function HeaderContainer({
             register={register}
             update={update}
             icon={"background"}
-            side="left"
+            left="10px"
             top="10px"
           />
 
@@ -66,7 +66,7 @@ export default function HeaderContainer({
                 path="header.logo"
                 register={register}
                 update={update}
-                side="right"
+                right={"10px"}
                 bottom={"0"}
               />
             </div>
@@ -74,9 +74,7 @@ export default function HeaderContainer({
           <div
             style={{
               position: "relative",
-              border: "3px green solid",
               width: "100%",
-              // height: "100px",
             }}
           >
             <SelectFontFamily
@@ -86,8 +84,9 @@ export default function HeaderContainer({
               update={update}
               showSelect={showSelect}
               setShowSelect={setShowSelect}
-              side="left"
-              top="-40px"
+              left="140px"
+              right=""
+              top="-25px"
               bottom=""
             />
 
@@ -97,8 +96,9 @@ export default function HeaderContainer({
               register={register}
               update={update}
               icon={"text"}
-              side="right"
-              top="-40px"
+              left="100px"
+              right=""
+              top="-25px"
               bottom=""
             />
 
@@ -135,7 +135,7 @@ export default function HeaderContainer({
                 </h1>
                 <TextInput
                   setEditingTitle={setEditingTitle}
-                  side="right"
+                  right="10px"
                   top="4px"
                 />
               </div>

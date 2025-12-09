@@ -8,12 +8,18 @@ export default function ColorPicker({
   register,
   update,
   icon,
-  side = "left",
+  left,
+  right,
   top,
   bottom,
 }) {
   return (
-    <Bubble side={side} topValue={top} bottomValue={bottom}>
+    <Bubble
+      leftValue={left}
+      rightValue={right}
+      topValue={top}
+      bottomValue={bottom}
+    >
       {icon === "text" ? (
         <FormatColorText fontSize="small" />
       ) : (

@@ -1,38 +1,31 @@
-// Bubble.jsx
-// Componente reutilizable para todos los inputs tipo "burbuja"
+// Bubble.jsx — Burbuja reutilizable con animación visual
 
 export default function Bubble({
   children,
-  side = "left",
+  leftValue,
+  rightValue,
   topValue,
   bottomValue,
   className = "",
-  style = {}, // 🔴 RED FLAG — permite override sin romper la burbuja
+  style = {},
 }) {
-  // Posiciones dinámicas según lado
-  const horizontalPosition =
-    side === "left"
-      ? { left: "10px", right: "auto" }
-      : { right: "10px", left: "auto" };
-
+  const horizontalPosition = { left: leftValue, right: rightValue };
   const verticalPosition = { top: topValue, bottom: bottomValue };
 
   return (
     <label
-      className={`cursor-pointer flex items-center justify-center shadow ${className}`}
+      className={`bubble cursor-pointer flex items-center justify-center ${className}`}
       style={{
-        backgroundColor: "var(--bubble)",
         width: "30px",
         height: "30px",
         borderRadius: "100%",
         position: "absolute",
-
         ...verticalPosition,
-        ...horizontalPosition, // 🔴 RED FLAG — posición dinámica
-        ...style, // 🔴 RED FLAG — permite personalizar desde fuera
+        ...horizontalPosition,
+        ...style,
       }}
     >
-      {children} {/* 🔴 RED FLAG — contiene cualquier input o icono */}
+      {children}
     </label>
   );
 }
