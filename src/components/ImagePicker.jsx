@@ -21,11 +21,12 @@ export default function ImagePicker({
       disabled={disabled}
     >
       <AddPhotoAlternate />
+
       <input
         type="file"
         {...register(path)}
         accept="image/*"
-        onChange={(e) => update(path, e.target.value)}
+        // onChange={(e) => update(path, e.target.value)}
         hidden
         disabled={disabled}
       />

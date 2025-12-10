@@ -11,15 +11,15 @@ export default function HeaderContainer({
   watch, //reemplaza todos los useState
   setValue, //  permite actualizar valores del form
   logoPreview, // viene preparado desde el padre
-
+  backgroundPreview,
+  backgroundMode,
+  setBackgroundMode,
 }) {
   const header = watch("header") || {};
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [showSelect, setShowSelect] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [disabledImage, setDisabledImage] = useState(true);
-  const [disabledColor, setDisabledColor] = useState(false);
 
   //  Helper para actualizar con dot notation
   const update = (path, value) => {
@@ -28,19 +28,11 @@ export default function HeaderContainer({
 
   const handleChange = (e) => {
     setChecked(e.target.checked);
-    if (e.target.checked) {
-      console.log("ES TRUE, cargo imagen y dejo el color");
-      setDisabledColor(true);
-      setDisabledImage(false);
-
-      update("header.backgroundImage", "");
-    } else {
-      console.log("ES FALSE, borro imagen y cargo el color");
-      setDisabledImage(true);
-      setDisabledColor(false);
-
-      update("header.backgroundImage", "");
-    }
+    setBackgroundMode((prev) => (prev === "color" ? "image" : "color"));
+    console.log(
+      "[HEADER] que tengo guardado en backgroundPREVIEW",
+      backgroundPreview
+    );
   };
 
   return (
@@ -49,8 +41,19 @@ export default function HeaderContainer({
         <div
           className="flex items-center justify-start text-center"
           style={{
-            backgroundColor: header.backgroundColor || "yellow",
             position: "relative",
+            backgroundColor:
+              backgroundMode === "color"
+                ? header.backgroundColor
+                : "transparent",
+
+            backgroundImage:
+              backgroundMode === "image" && backgroundPreview
+                ? `url(${backgroundPreview})`
+                : "none",
+
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         >
           {/*  color picker reemplazado por componente */}
@@ -62,7 +65,7 @@ export default function HeaderContainer({
             icon={"background"}
             right="120px"
             top="10px"
-            disabled={disabledColor}
+            disabled={backgroundMode === "image"}
           />
           <div style={{ position: "absolute", right: "70px", top: "5px" }}>
             <Switch
@@ -78,7 +81,7 @@ export default function HeaderContainer({
             update={update}
             right="50px"
             top="10px"
-            disabled={disabledImage}
+            disabled={backgroundMode === "color"}
           />
 
           <div

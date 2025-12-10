@@ -1,30 +1,29 @@
 // CreateWebForm.jsx
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUserStore } from "../store/userStore";
 import { useSiteStore } from "../store/siteStore";
 import { useBuildStore } from "../store/buildStore";
 import { useNavigate } from "react-router-dom";
 import HeaderContainer from "./HeaderContainer";
+import useImagePreview from "../hooks/useImagePreview";
 
 export default function CreateWebForm() {
   const {
     register,
     handleSubmit,
     reset,
-    setValue, // para actualizar form
-    watch, // todo se observa desde el form
+    setValue,
+    watch,
     formState: { errors },
   } = useForm();
 
   const { user } = useUserStore();
   const { saveSite, isLoading, error, fetchSite, miWeb } = useSiteStore();
   const { buildSite, deployedUrl, siteIsLoading } = useBuildStore();
+  const [backgroundMode, setBackgroundMode] = useState("color");
   const navigate = useNavigate();
 
-  // ---------------------------------------------------------
-  // cargar config inicial en el form
-  // ---------------------------------------------------------
   useEffect(() => {
     if (user) fetchSite();
   }, [user, fetchSite]);
@@ -40,29 +39,29 @@ export default function CreateWebForm() {
         backgroundColor: header.backgroundColor || "#ffffff",
         textColor: header.textColor || "#000000",
         textFamily: header.textFamily || "sans-serif",
-        logoUrl: header.logoUrl || "", 
+        logoUrl: header.logoUrl || "",
+        backgroundImageUrl: header.backgroundImageUrl || "",
+        logo: undefined,
+        backgroundImage: undefined,
       },
     });
-
-    // NO SETEO ESTADOS — solo form values
   }, [miWeb, reset, setValue]);
 
-  // ---------------------------------------------------------
-  // Preview de logo usando watch en vez de useState
-  // ---------------------------------------------------------
-  const watchedLogo = watch("header.logo"); // file
-  const watchedHeader = watch("header"); //  para live preview
+  const watchedLogo = watch("header.logo"); // FileList de RHF
+  const watchedHeader = watch("header"); // valores de Firestore
+  const watchedBackground = watch("header.backgroundImage");
 
-  const logoPreview = (() => {
-    if (watchedLogo && watchedLogo.length > 0) {
-      return URL.createObjectURL(watchedLogo[0]);
-    }
-    return watchedHeader?.logoUrl || ""; // viene de Firestore
-  })();
+  const logoPreview = useImagePreview(
+    watchedLogo,
+    watchedHeader?.logoUrl ||
+      "https://res.cloudinary.com/dmieiirut/image/upload/v1764709159/ctrl-f-images/knsquqbd3oqa3utddip2.png"
+  );
 
-  // ---------------------------------------------------------
-  // Enviar formulario
-  // ---------------------------------------------------------
+  const backgroundPreview = useImagePreview(
+    watchedBackground,
+    watchedHeader?.backgroundImageUrl || ""
+  );
+
   const onSubmit = async (data) => {
     if (!user) {
       alert("Primero tenés que iniciar sesión");
@@ -77,15 +76,21 @@ export default function CreateWebForm() {
         title: data.header.title,
         textColor: data.header.textColor,
         textFamily: data.header.textFamily,
+        backgroundMode: backgroundMode,
         backgroundColor: data.header.backgroundColor,
-        logoUrl: data.header.logoUrl || "", 
+        logoUrl: data.header.logoUrl || "",
+        backgroundImageUrl: data.header.backgroundImageUrl || "",
       },
     };
 
     formData.append("miWeb", JSON.stringify(miWebConfig));
 
     if (data.header.logo && data.header.logo[0]) {
-      formData.append("logo", data.header.logo[0]);
+      formData.append("headerLogo", data.header.logo[0]);
+    }
+
+    if (data.header.backgroundImage && data.header.backgroundImage[0]) {
+      formData.append("headerBackground", data.header.backgroundImage[0]);
     }
 
     await saveSite(formData);
@@ -113,6 +118,9 @@ export default function CreateWebForm() {
           watch={watch} //se pasa WATCH
           setValue={setValue} //  se pasan setters del form
           logoPreview={logoPreview}
+          backgroundPreview={backgroundPreview}
+          backgroundMode={backgroundMode}
+          setBackgroundMode={setBackgroundMode}
         />
 
         {/* BOTONES */}
