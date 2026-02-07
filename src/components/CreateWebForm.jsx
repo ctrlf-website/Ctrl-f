@@ -7,6 +7,7 @@ import { useBuildStore } from "../store/buildStore";
 import { useNavigate } from "react-router-dom";
 import HeaderContainer from "./HeaderContainer";
 import useImagePreview from "../hooks/useImagePreview";
+import { logout } from "../api/auth";
 
 export default function CreateWebForm() {
   const {
@@ -54,18 +55,20 @@ export default function CreateWebForm() {
   const logoPreview = useImagePreview(
     watchedLogo,
     watchedHeader?.logoUrl ||
-      "https://res.cloudinary.com/dmieiirut/image/upload/v1764709159/ctrl-f-images/knsquqbd3oqa3utddip2.png"
+      "https://res.cloudinary.com/dmieiirut/image/upload/v1764709159/ctrl-f-images/knsquqbd3oqa3utddip2.png",
   );
 
   const backgroundPreview = useImagePreview(
     watchedBackground,
-    watchedHeader?.backgroundImageUrl || ""
+    watchedHeader?.backgroundImageUrl || "",
   );
 
   const onSubmit = async (data) => {
     if (!user) {
-      alert("Primero tenés que iniciar sesión");
-      navigate("/login", { state: { miWeb: data } });
+      alert(
+        "Este proyecto esta alojado en Google, por lo tanto debes iniciar sesión con google por ahora, debes iniciar sesión para guardar tu sitio",
+      );
+      navigate("/Login", { state: { miWeb: data } });
       return;
     }
 
@@ -99,11 +102,25 @@ export default function CreateWebForm() {
 
   const onBuild = () => {
     if (!user) {
-      alert("Primero tenés que iniciar sesión y PAGAR");
+      alert(
+        "Este proyecto esta alojado en Google, por lo tanto debes iniciar sesión con google por ahora para publicar tu sitio",
+      );
+      navigate("/Login", { state: { miWeb: data } });
       return;
     }
     buildSite();
     reset();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      alert("Sesión cerrada");
+      navigate("/");
+    } catch (err) {
+      console.error("Error al cerrar sesión", err);
+      alert("No se pudo cerrar sesión");
+    }
   };
 
   return (
@@ -145,6 +162,16 @@ export default function CreateWebForm() {
             >
               {siteIsLoading ? "Publicando..." : "Publicar sitio"}
             </button>
+
+            {user && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex-1 bg-red-600 text-white font-medium py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                Cerrar sesión
+              </button>
+            )}
           </div>
 
           {deployedUrl && (
