@@ -1,4 +1,4 @@
-// HeaderContainer.jsx
+// BannerContainer.jsx
 import { useState } from "react";
 import ColorPicker from "./ColorPicker";
 import ImagePicker from "./ImagePicker";
@@ -6,7 +6,7 @@ import TextInput from "./TextInput";
 import SelectFontFamily from "./SelectFontFamily";
 import { Switch } from "@mui/material";
 
-export default function HeaderContainer({
+export default function BannerContainer({
   register,
   watch, //reemplaza todos los useState
   setValue, //  permite actualizar valores del form
@@ -39,7 +39,7 @@ export default function HeaderContainer({
     <>
       <div className="relative overflow-hidden shadow-lg">
         <div
-          className=" borde-dibujado flex items-center justify-start text-center"
+          className="borde-dibujado flex items-center justify-start text-center"
           style={{
             position: "relative",
             backgroundColor:
@@ -82,36 +82,6 @@ export default function HeaderContainer({
             disabled={backgroundMode === "color"}
           />
 
-          <div
-            className="mr-6"
-            style={{
-              position: "relative",
-              margin: "24px",
-            }}
-          >
-            <div className="relative">
-              <div
-                className="shadow-md bg-center bg-contain bg-no-repeat"
-                style={{
-                  backgroundImage: logoPreview
-                    ? `url(${logoPreview})`
-                    : "url(https://res.cloudinary.com/dmieiirut/image/upload/v1764709159/ctrl-f-images/knsquqbd3oqa3utddip2.png)",
-                  width: "120px",
-                  height: "120px",
-                  borderRadius: "100%",
-                  border: "2px solid black",
-                }}
-              />
-
-              <ImagePicker
-                path="header.logo"
-                register={register}
-                update={update}
-                right={"10px"}
-                bottom={"0"}
-              />
-            </div>
-          </div>
           <div
             style={{
               position: "relative",
@@ -164,7 +134,7 @@ export default function HeaderContainer({
               />
             ) : (
               <div className="flex items-center justify-center">
-                <h1
+                <h3
                   className="mt-4 text-2xl font-semibold hover:opacity-80 transition"
                   style={{
                     fontFamily: header.textFamily,
@@ -172,13 +142,13 @@ export default function HeaderContainer({
                     position: "relative",
                   }}
                 >
-                  {header.title || "Haz click para cambiar el título del sitio"}
+                  {"Aqui va un llamado a la accion"}
                   <TextInput
                     setEditingTitle={setEditingTitle}
                     right="-50px"
                     top="4px"
                   />
-                </h1>
+                </h3>
               </div>
             )}
           </div>

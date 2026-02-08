@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import HeaderContainer from "./HeaderContainer";
 import useImagePreview from "../hooks/useImagePreview";
 import { logout } from "../api/auth";
+import CardsContainer from "./CardsContainer";
+import BannerContainer from "./BannerContainer";
 
 export default function CreateWebForm() {
   const {
@@ -20,19 +22,52 @@ export default function CreateWebForm() {
   } = useForm();
 
   const { user } = useUserStore();
-  const { saveSite, isLoading, error, fetchSite, miWeb } = useSiteStore();
-  const { buildSite, deployedUrl, siteIsLoading } = useBuildStore();
+  const { saveSite, isLoading, error, fetchSite, miWeb, resetSite } =
+    useSiteStore();
+  const { buildSite, deployedUrl, siteIsLoading, resetBuild } = useBuildStore();
   const [backgroundMode, setBackgroundMode] = useState("color");
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("USUARIO:", user);
+
     if (user) fetchSite();
   }, [user, fetchSite]);
 
   useEffect(() => {
+    // Inicializar con valores por defecto cuando no hay usuario
+    if (!miWeb && !user) {
+      reset({
+        header: {
+          title: "",
+          backgroundColor: "#ffffff",
+          textColor: "#000000",
+          textFamily: "sans-serif",
+          logoUrl: "",
+          backgroundImageUrl: "",
+          logo: undefined,
+          backgroundImage: undefined,
+        },
+        cards: {
+          count: 3,
+          backgroundColor: "#ffffff",
+          textColor: "#000000",
+          textFamily: "sans-serif",
+          textAlign: "start",
+          items: [
+            { title: "", description: "", imageUrl: "" },
+            { title: "", description: "", imageUrl: "" },
+            { title: "", description: "", imageUrl: "" },
+          ],
+        },
+      });
+      return;
+    }
+
     if (!miWeb) return;
 
     const header = miWeb.header || {};
+    const cards = miWeb.cards || {};
 
     reset({
       header: {
@@ -45,8 +80,20 @@ export default function CreateWebForm() {
         logo: undefined,
         backgroundImage: undefined,
       },
+      cards: {
+        count: cards.count || 3,
+        backgroundColor: cards.backgroundColor || "#ffffff",
+        textColor: cards.textColor || "#000000",
+        textFamily: cards.textFamily || "sans-serif",
+        textAlign: cards.textAlign || "start",
+        items: [
+          { title: "", description: "", imageUrl: "" },
+          { title: "", description: "", imageUrl: "" },
+          { title: "", description: "", imageUrl: "" },
+        ],
+      },
     });
-  }, [miWeb, reset, setValue]);
+  }, [miWeb, reset, setValue, user]);
 
   const watchedLogo = watch("header.logo"); // FileList de RHF
   const watchedHeader = watch("header"); // valores de Firestore
@@ -65,9 +112,6 @@ export default function CreateWebForm() {
 
   const onSubmit = async (data) => {
     if (!user) {
-      alert(
-        "Este proyecto esta alojado en Google, por lo tanto debes iniciar sesión con google por ahora, debes iniciar sesión para guardar tu sitio",
-      );
       navigate("/Login", { state: { miWeb: data } });
       return;
     }
@@ -84,7 +128,16 @@ export default function CreateWebForm() {
         logoUrl: data.header.logoUrl || "",
         backgroundImageUrl: data.header.backgroundImageUrl || "",
       },
+      cards: {
+        count: data.cards.count,
+        backgroundColor: data.cards.backgroundColor,
+        textColor: data.cards.textColor,
+        textFamily: data.cards.textFamily,
+        textAlign: data.cards.textAlign,
+        items: data.cards.items || [],
+      },
     };
+    console.log("miWeb:", miWebConfig);
 
     formData.append("miWeb", JSON.stringify(miWebConfig));
 
@@ -96,15 +149,12 @@ export default function CreateWebForm() {
       formData.append("headerBackground", data.header.backgroundImage[0]);
     }
 
-    await saveSite(formData);
-    reset();
+    // await saveSite(formData);
+    // reset();
   };
 
   const onBuild = () => {
     if (!user) {
-      alert(
-        "Este proyecto esta alojado en Google, por lo tanto debes iniciar sesión con google por ahora para publicar tu sitio",
-      );
       navigate("/Login", { state: { miWeb: data } });
       return;
     }
@@ -115,6 +165,8 @@ export default function CreateWebForm() {
   const handleLogout = async () => {
     try {
       await logout();
+      resetSite();
+      resetBuild();
       alert("Sesión cerrada");
       navigate("/");
     } catch (err) {
@@ -134,6 +186,16 @@ export default function CreateWebForm() {
           register={register}
           watch={watch} //se pasa WATCH
           setValue={setValue} //  se pasan setters del form
+          logoPreview={logoPreview}
+          backgroundPreview={backgroundPreview}
+          backgroundMode={backgroundMode}
+          setBackgroundMode={setBackgroundMode}
+        />
+        <CardsContainer register={register} watch={watch} setValue={setValue} />
+        <BannerContainer
+          register={register}
+          watch={watch}
+          setValue={setValue}
           logoPreview={logoPreview}
           backgroundPreview={backgroundPreview}
           backgroundMode={backgroundMode}

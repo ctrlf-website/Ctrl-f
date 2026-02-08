@@ -1,116 +1,139 @@
 import { useState } from "react";
 import {
-  FormatColorText,
-  FormatColorFill,
-  TextFormat,
-  AddPhotoAlternate,
-  EditNote,
-} from "@mui/icons-material";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
+  Switch,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
+import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
+import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
+import FormatAlignRightIcon from "@mui/icons-material/FormatAlignRight";
+import ColorPicker from "./ColorPicker";
+import SelectFontFamily from "./SelectFontFamily";
+import CardItem from "./CardItem";
 
-export default function CardsContainer({
-  register,
-  editingTitle,
-  setEditingTitle,
-  titleFont,
-  titleColor,
-  titleText,
-}) {
+export default function CardsContainer({ register, watch, setValue }) {
+  // 🔹 Fuente de verdad: formulario
+  const cards = watch("cards") || {};
+  const items = cards.items || [];
+  const count = cards.count || 3;
+  const watchedImages = watch("cards.items") || [];
+
+  // 🔹 UI state
+  const [editingTitle, setEditingTitle] = useState(null);
+  const [editingText, setEditingText] = useState(null);
   const [showSelect, setShowSelect] = useState(false);
-  const cards = 3 || 6;
+
+  // 🔹 helper igual que HeaderContainer
+  const update = (path, value) => {
+    console.log("update", path, value);
+    console.log("miWeb.cards", cards);
+
+    setValue(path, value, { shouldDirty: true, shouldTouch: true });
+  };
+
+  // 🔹 switch 3 / 6 (ajusta count + items)
+  const handleCountChange = () => {
+    const nextCount = count === 6 ? 3 : 6;
+    const nextItems = [...items];
+
+    if (nextCount > items.length) {
+      for (let i = items.length; i < nextCount; i++) {
+        nextItems.push({ title: "", description: "", imageUrl: "" });
+      }
+    }
+
+    update("cards.count", nextCount);
+    update("cards.items", nextItems.slice(0, nextCount));
+  };
+
+  // const imagePreviews = items.map((item, idx) =>
+  //   useImagePreview(watchedImages?.[idx]?.imageFile, item.imageUrl || ""),
+  // );
+
   return (
     <>
-      {/* {cards.map((card, index) => (
-    
-      ))} */}
-      <Card sx={{ maxWidth: 345 }}>
-        <CardMedia
-          sx={{ height: 140, position: "relative" }}
-          image="https://res.cloudinary.com/dmieiirut/image/upload/v1764709159/ctrl-f-images/knsquqbd3oqa3utddip2.png"
-          title="green iguana"
+      {/* 🔧 CONTROLES GLOBALES */}
+      <section className="border-2 border-black w-[70%] m-auto my-[20px] flex items-center justify-around">
+        <span>
+          <span>3</span>
+          <Switch checked={count === 6} onChange={handleCountChange} />
+          <span>6</span>
+        </span>
+
+        <span className="relative min-w-[200px] min-h-[40px]">
+          <ColorPicker
+            path="cards.backgroundColor"
+            value={cards.backgroundColor}
+            register={register}
+            update={update}
+            icon="background"
+            right="120px"
+            top="5px"
+          />
+
+          <SelectFontFamily
+            path="cards.textFamily"
+            value={cards.textFamily}
+            register={register}
+            update={update}
+            showSelect={showSelect}
+            setShowSelect={setShowSelect}
+            right="80px"
+            top="5px"
+          />
+
+          <ColorPicker
+            path="cards.textColor"
+            value={cards.textColor}
+            register={register}
+            update={update}
+            icon="text"
+            right="40px"
+            top="5px"
+          />
+        </span>
+
+        <RadioGroup
+          value={cards.textAlign || "start"}
+          onChange={(e) => update("cards.textAlign", e.target.value)}
+          className="w-[30%] flex !flex-row justify-around"
         >
-          <label
-            className="absolute bottom-0 right-0 cursor-pointer"
-            style={{
-              backgroundColor: "var(--primary)",
-              width: "30px",
-              height: "30px",
-              borderRadius: "100%",
-              position: "absolute",
-              bottom: "0",
-              right: "10px",
-            }}
-          >
-            <AddPhotoAlternate />
+          <FormControlLabel
+            value="start"
+            control={<Radio />}
+            label={<FormatAlignLeftIcon />}
+          />
+          <FormControlLabel
+            value="center"
+            control={<Radio />}
+            label={<FormatAlignJustifyIcon />}
+          />
+          <FormControlLabel
+            value="end"
+            control={<Radio />}
+            label={<FormatAlignRightIcon />}
+          />
+        </RadioGroup>
+      </section>
 
-            <input hidden type="file" accept="image/*" {...register("logo")} />
-          </label>
-        </CardMedia>
-
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {editingTitle ? (
-              <input
-                autoFocus
-                type="text"
-                {...register("title")}
-                className="w-full shadow-sm focus:outline-none focus:ring-0 focus:border-none"
-                placeholder="Escribe el título del sitio"
-                onBlur={() => setEditingTitle(false)}
-                style={{
-                  backgroundColor: "red",
-                  border: "none",
-                  appearance: "none",
-                  borderBottom: "1px solid black",
-                  fontSize: "xxx-large",
-                }}
-              />
-            ) : (
-              <div className="flex items-center justify-center">
-                <h1
-                  className="mt-4 text-2xl font-semibold hover:opacity-80 transition"
-                  style={{
-                    fontFamily: titleFont,
-                    color: titleColor,
-                    position: "relative",
-                  }}
-                >
-                  {titleText || "Haz click para cambiar el título del sitio"}
-                  <EditNote
-                    className="cursor-pointer"
-                    onClick={() => setEditingTitle(true)}
-                    style={{
-                      backgroundColor: "var(--primary)",
-                      width: "30px",
-                      height: "30px",
-                      borderRadius: "100%",
-                      position: "absolute",
-                      bottom: "0",
-                      right: "-100px",
-                      color: "black",
-                    }}
-                  />
-                </h1>
-              </div>
-            )}
-          </Typography>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small">Share</Button>
-          <Button size="small">Learn More</Button>
-        </CardActions>
-      </Card>
+      {/* 🧩 CARDS */}
+      <section className="grid grid-cols-3 justify-items-center w-full gap-y-[20px]">
+        {items.slice(0, count).map((item, idx) => (
+          <CardItem
+            key={idx}
+            item={item}
+            idx={idx}
+            cards={cards}
+            register={register}
+            update={update}
+            editingTitle={editingTitle}
+            setEditingTitle={setEditingTitle}
+            editingText={editingText}
+            setEditingText={setEditingText}
+          />
+        ))}
+      </section>
     </>
   );
 }
