@@ -25,4 +25,8 @@ export const useSiteStore = create((set) => ({
       set({ error, isLoading: false });
     }
   },
+
+  resetSite: () => {
+    set({ miWeb: null, isLoading: false, error: null });
+  },
 }));

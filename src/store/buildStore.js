@@ -25,4 +25,8 @@ export const useBuildStore = create((set) => ({
       });
     }
   },
+
+  resetBuild: () => {
+    set({ deployedUrl: null, siteIsLoading: false, error: null });
+  },
 }));
